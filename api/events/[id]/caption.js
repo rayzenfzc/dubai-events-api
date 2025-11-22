@@ -3,31 +3,39 @@ import admin from 'firebase-admin';
 
 // Initialize Firebase Admin (only once)
 if (!admin.apps.length) {
-    admin.initializeApp({
-        projectId: 'studio-1436622267-3c444'
-    });
+    try {
+        admin.initializeApp({
+            credential: admin.credential.cert({
+                projectId: process.env.FIREBASE_PROJECT_ID,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
+            })
+        });
+    } catch (error) {
+        console.error('Firebase admin initialization error', error.stack);
+    }
 }
 
 const db = admin.firestore();
 
 function generateCaption(event) {
-    let caption = `🎉 ${event.title}\n\n`;
+    let caption = `🎉 ${event.title} \n\n`;
 
     if (event.venue) {
-        caption += `📍 ${event.venue}\n`;
+        caption += `📍 ${event.venue} \n`;
     }
 
     if (event.date) {
         const date = new Date(event.date);
-        caption += `📅 ${date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}\n`;
+        caption += `📅 ${date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} \n`;
     }
 
     if (event.price && event.price > 0) {
-        caption += `💰 From ${event.price} ${event.currency}\n`;
+        caption += `💰 From ${event.price} ${event.currency} \n`;
     }
 
     caption += `\n🎫 Get your tickets now!\n`;
-    caption += `🔗 ${event.link}\n\n`;
+    caption += `🔗 ${event.link} \n\n`;
     caption += `#DubaiEvents #Dubai #UAE #ThingsToDo #DubaiLife #VisitDubai #MyDubai #DubaiNightlife #DubaiEntertainment`;
 
     return caption;

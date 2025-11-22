@@ -3,6 +3,8 @@ import admin from 'firebase-admin';
 
 // Initialize Firebase Admin (only once)
 // Initialize Firebase Admin (only once)
+let initError = null;
+
 // Initialize Firebase Admin (only once)
 if (!admin.apps.length) {
     try {
@@ -19,6 +21,7 @@ if (!admin.apps.length) {
         });
     } catch (error) {
         console.error('Firebase admin initialization error', error);
+        initError = error;
     }
 }
 
@@ -32,6 +35,15 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
+    }
+
+    if (initError) {
+        return res.status(500).json({
+            success: false,
+            error: 'Firebase Initialization Failed',
+            details: initError.message,
+            stack: initError.stack
+        });
     }
 
     if (req.method !== 'GET') {

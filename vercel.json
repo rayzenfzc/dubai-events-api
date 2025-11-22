@@ -8,6 +8,22 @@
     ],
     "routes": [
         {
+            "src": "/api/events/unposted",
+            "dest": "/api/events/unposted.js"
+        },
+        {
+            "src": "/api/events/(?<id>[^/]+)/caption",
+            "dest": "/api/events/[id]/caption.js"
+        },
+        {
+            "src": "/api/events/(?<id>[^/]+)/compress-image",
+            "dest": "/api/events/[id]/compress-image.js"
+        },
+        {
+            "src": "/api/events/(?<id>[^/]+)/mark-posted",
+            "dest": "/api/events/[id]/mark-posted.js"
+        },
+        {
             "src": "/api/(.*)",
             "dest": "/api/$1"
         }

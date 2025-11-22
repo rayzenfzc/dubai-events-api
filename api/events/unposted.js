@@ -9,7 +9,7 @@ let initError = null;
 if (!admin.apps.length) {
     try {
         const privateKey = process.env.FIREBASE_PRIVATE_KEY
-            ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+            ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n').replace(/\\\\n/g, '\n')
             : undefined;
 
         admin.initializeApp({

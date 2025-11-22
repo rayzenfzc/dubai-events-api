@@ -1,0 +1,21 @@
+{
+  "name": "dubai-events",
+  "version": "1.0.0",
+  "description": "Dubai Events aggregator with PlatinumList API and Firestore",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "fetch-events": "node scripts/fetchEvents.js",
+    "dev": "npx http-server . -p 8080 -o"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "firebase-admin": "^12.7.0",
+    "node-fetch": "^3.3.2",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

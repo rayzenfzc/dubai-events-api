@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Upload Events to Firestore</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #log {
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-line {
+            margin: 5px 0;
+        }
+
+        .error {
+            color: #ff4444;
+        }
+
+        .success {
+            color: #44ff44;
+        }
+
+        .info {
+            color: #4444ff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📤 Upload Events to Firestore</h1>
+        <p>This will upload the 39 events from PlatinumList API to your Firestore database.</p>
+
+        <button id="uploadBtn" onclick="uploadEvents()">Upload Events Now</button>
+
+        <div id="log"></div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_-IC84RPMHQCfznaLUWS8UotwHR-2bc8",
+            authDomain: "studio-1436622267-3c444.firebaseapp.com",
+            projectId: "studio-1436622267-3c444",
+            storageBucket: "studio-1436622267-3c444.firebasestorage.app",
+            messagingSenderId: "350773236607",
+            appId: "1:350773236607:web:91cb954c8524b1ab07804a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            line.textContent = message;
+            logDiv.appendChild(line);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        async function uploadEvents() {
+            const btn = document.getElementById('uploadBtn');
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+
+            log('🔄 Starting upload process...', 'info');
+
+            try {
+                // Fetch the events data
+                log('📥 Fetching events from JSON file...', 'info');
+                const response = await fetch('./events-clean.json');
+                const events = await response.json();
+
+                log(`✅ Loaded ${events.length} events`, 'success');
+
+                // Upload in batches (Firestore batch limit is 500)
+                const batchSize = 500;
+                const eventIds = [];
+
+                for (let i = 0; i < events.length; i += batchSize) {
+                    const batch = db.batch();
+                    const chunk = events.slice(i, i + batchSize);
+
+                    log(`📤 Uploading batch ${Math.floor(i / batchSize) + 1} (${chunk.length} events)...`, 'info');
+
+                    for (const event of chunk) {
+                        const docRef = db.collection('events').doc(event.id.toString());
+
+                        const eventData = {
+                            id: event.id,
+                            title: event.title,
+                            description: event.description || '',
+                            venue: event.venue,
+                            venueAddress: event.venueAddress || '',
+                            image: event.image,
+                            thumbnailImage: event.thumbnailImage || '',
+                            startDate: event.startDate,
+                            endDate: event.endDate,
+                            minPrice: event.minPrice,
+                            maxPrice: event.maxPrice,
+                            currency: event.currency,
+                            referralUrl: event.referralUrl,
+                            referralCode: event.referralCode || '',
+                            categories: event.categories || [],
+                            tags: event.tags || [],
+                            status: event.status,
+                            featured: event.featured,
+                            // Fields for website display
+                            link: event.referralUrl,
+                            price: event.minPrice > 0 ? event.minPrice.toString() : '',
+                            date: event.startDate || '',
+                            badge: '',
+                            category: event.categories && event.categories.length > 0 ? event.categories[0] : '',
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+
+                        batch.set(docRef, eventData, { merge: true });
+                        eventIds.push(event.id.toString());
+                    }
+
+                    await batch.commit();
+                    log(`✅ Batch ${Math.floor(i / batchSize) + 1} uploaded successfully`, 'success');
+                }
+
+                // Update automation/postedEvents
+                log('📝 Updating automation/postedEvents document...', 'info');
+                await db.collection('automation').doc('postedEvents').set({
+                    ids: eventIds,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                log('✅ Updated postedEvents document', 'success');
+                log(`🎉 SUCCESS! Uploaded ${events.length} events to Firestore!`, 'success');
+                log('🌐 You can now refresh your main website to see the events!', 'success');
+
+                btn.textContent = '✅ Upload Complete!';
+
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                console.error(error);
+                btn.disabled = false;
+                btn.textContent = 'Retry Upload';
+            }
+        }
+    </script>
+</body>
+
+</html>

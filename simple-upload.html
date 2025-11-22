@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Upload Events - Simple</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background: #ccc;
+        }
+
+        #log {
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-line {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📤 Upload Events to Firestore</h1>
+    <p>Click the button below to upload all 39 events from the PlatinumList API to your Firestore database.</p>
+
+    <button id="uploadBtn" onclick="uploadEvents()">Upload Events Now</button>
+
+    <div id="log"></div>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_-IC84RPMHQCfznaLUWS8UotwHR-2bc8",
+            authDomain: "studio-1436622267-3c444.firebaseapp.com",
+            projectId: "studio-1436622267-3c444",
+            storageBucket: "studio-1436622267-3c444.firebasestorage.app",
+            messagingSenderId: "350773236607",
+            appId: "1:350773236607:web:91cb954c8524b1ab07804a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            line.textContent = message;
+            logDiv.appendChild(line);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        async function uploadEvents() {
+            const btn = document.getElementById('uploadBtn');
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+
+            log('🔄 Starting upload...');
+
+            try {
+                // Fetch events from the JSON file
+                const response = await fetch('./events-clean.json');
+                const events = await response.json();
+
+                log(`✅ Loaded ${events.length} events from JSON`);
+
+                // Upload events in batches
+                const batch = db.batch();
+                const eventIds = [];
+
+                for (const event of events) {
+                    const docRef = db.collection('events').doc(event.id.toString());
+
+                    batch.set(docRef, {
+                        ...event,
+                        link: event.referralUrl,
+                        price: event.minPrice > 0 ? event.minPrice.toString() : '',
+                        date: event.startDate || '',
+                        badge: '',
+                        category: event.categories && event.categories.length > 0 ? event.categories[0] : ''
+                    }, { merge: true });
+
+                    eventIds.push(event.id.toString());
+                }
+
+                log('📤 Uploading to Firestore...');
+                await batch.commit();
+                log(`✅ Uploaded ${events.length} events!`);
+
+                // Update automation/postedEvents
+                log('📝 Updating postedEvents document...');
+                await db.collection('automation').doc('postedEvents').set({
+                    ids: eventIds,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                log('✅ Updated postedEvents!');
+                log(`🎉 SUCCESS! All ${events.length} events uploaded!`);
+                log('🌐 Refresh your main website to see the events!');
+
+                btn.textContent = '✅ Upload Complete!';
+
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                console.error(error);
+                btn.disabled = false;
+                btn.textContent = 'Retry Upload';
+            }
+        }
+    </script>
+</body>
+
+</html>

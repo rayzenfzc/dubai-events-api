@@ -66,12 +66,16 @@ export default async function handler(req, res) {
     try {
         const limit = parseInt(req.query.limit) || 5;
 
+        console.log(`[UNPOSTED API] Fetching up to ${limit} unposted events...`);
+
         // Get unposted events
         const eventsSnapshot = await db.collection('events')
             .where('posted', '==', false)
             .where('status', '==', 'on sale')
             .limit(limit)
             .get();
+
+        console.log(`[UNPOSTED API] Found ${eventsSnapshot.size} unposted events`);
 
         const events = [];
         eventsSnapshot.forEach(doc => {
@@ -85,21 +89,42 @@ export default async function handler(req, res) {
                 currency: data.currency,
                 link: data.referralUrl,
                 venue: data.venue,
-                date: data.startDate
+                date: data.startDate,
+                featured: data.featured || false
             });
         });
+
+        // Sort by featured first, then by date (upcoming events first)
+        events.sort((a, b) => {
+            // Featured events come first
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+
+            // Then sort by date (earliest first)
+            const dateA = a.date ? new Date(a.date) : new Date('2099-12-31');
+            const dateB = b.date ? new Date(b.date) : new Date('2099-12-31');
+            return dateA - dateB;
+        });
+
+        console.log(`[UNPOSTED API] Returning ${events.length} events`);
+        if (events.length > 0) {
+            console.log(`[UNPOSTED API] First event: ${events[0].title}`);
+        }
 
         return res.status(200).json({
             success: true,
             count: events.length,
-            events: events
+            events: events,
+            message: events.length === 0 ? 'No unposted events found' : `Found ${events.length} unposted events`
         });
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[UNPOSTED API ERROR]', error);
+        console.error('[UNPOSTED API ERROR] Stack:', error.stack);
         return res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message,
+            details: 'Check Vercel logs for more information'
         });
     }
 }

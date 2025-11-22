@@ -28,3 +28,8 @@ Thumbs.db
 # Ignore Firebase service account keys (if any)
 *-firebase-adminsdk-*.json
 serviceAccountKey.json
+
+# Ignore HTML files with API keys
+upload-events.html
+simple-upload.html
+index.html

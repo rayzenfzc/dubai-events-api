@@ -39,24 +39,50 @@ export default async function handler(req, res) {
     try {
         const { id } = req.query;
 
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                error: 'Event ID is required'
+            });
+        }
+
+        console.log(`[MARK-POSTED API] Marking event ${id} as posted...`);
+
+        // Check if event exists
+        const eventDoc = await db.collection('events').doc(id).get();
+
+        if (!eventDoc.exists) {
+            console.log(`[MARK-POSTED API] Event ${id} not found`);
+            return res.status(404).json({
+                success: false,
+                error: 'Event not found'
+            });
+        }
+
+        const eventData = eventDoc.data();
+        console.log(`[MARK-POSTED API] Event found: ${eventData.title}`);
+
         await db.collection('events').doc(id).update({
             posted: true,
             postedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        console.log(`Marked event ${id} as posted`);
+        console.log(`[MARK-POSTED API] ✅ Successfully marked event ${id} as posted`);
 
         return res.status(200).json({
             success: true,
             eventId: id,
+            eventTitle: eventData.title,
             message: 'Event marked as posted'
         });
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[MARK-POSTED API ERROR]', error);
+        console.error('[MARK-POSTED API ERROR] Stack:', error.stack);
         return res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message,
+            details: 'Check Vercel logs for more information'
         });
     }
 }

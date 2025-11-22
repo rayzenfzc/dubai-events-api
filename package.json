@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "fetch-events": "node scripts/fetchEvents.js",
-    "dev": "npx http-server . -p 8080 -o"
+    "dev": "npx http-server . -p 8080 -o",
+    "build": "echo 'No build step'"
   },
   "dependencies": {
     "cors": "^2.8.5",

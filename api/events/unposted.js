@@ -70,7 +70,6 @@ export default async function handler(req, res) {
         const eventsSnapshot = await db.collection('events')
             .where('posted', '==', false)
             .where('status', '==', 'on sale')
-            .orderBy('featured', 'desc')
             .limit(limit)
             .get();
 

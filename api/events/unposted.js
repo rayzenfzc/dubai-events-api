@@ -25,7 +25,7 @@ if (!admin.apps.length) {
     }
 }
 
-const db = admin.firestore();
+let db;
 
 export default async function handler(req, res) {
     // Enable CORS
@@ -44,6 +44,19 @@ export default async function handler(req, res) {
             details: initError.message,
             stack: initError.stack
         });
+    }
+
+    // Initialize DB if not already done
+    if (!db) {
+        try {
+            db = admin.firestore();
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: 'Firestore Initialization Failed',
+                details: error.message
+            });
+        }
     }
 
     if (req.method !== 'GET') {

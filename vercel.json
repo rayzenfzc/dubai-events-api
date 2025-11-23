@@ -28,6 +28,10 @@
             "dest": "/api/events/[id]/mark-posted.js"
         },
         {
+            "src": "/api/create-test-event",
+            "dest": "/api/create-test-event.js"
+        },
+        {
             "src": "/api/(.*)",
             "dest": "/api/$1"
         }

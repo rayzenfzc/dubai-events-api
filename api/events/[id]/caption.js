@@ -2,6 +2,8 @@
 import admin from 'firebase-admin';
 
 // Initialize Firebase Admin (only once)
+let initError = null;
+
 if (!admin.apps.length) {
     try {
         const privateKey = process.env.FIREBASE_PRIVATE_KEY
@@ -16,11 +18,12 @@ if (!admin.apps.length) {
             })
         });
     } catch (error) {
-        console.error('Firebase admin initialization error', error);
+        console.error('[CAPTION API] Firebase admin initialization error', error);
+        initError = error;
     }
 }
 
-const db = admin.firestore();
+let db;
 
 function generateCaption(event) {
     let caption = `🎉 ${event.title} \n\n`;
@@ -55,12 +58,38 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
+    if (initError) {
+        console.error('[CAPTION API] Init error present:', initError.message);
+        return res.status(500).json({
+            success: false,
+            error: 'Firebase Initialization Failed',
+            details: initError.message
+        });
+    }
+
+    // Initialize DB if not already done
+    if (!db) {
+        try {
+            db = admin.firestore();
+            console.log('[CAPTION API] Firestore initialized');
+        } catch (error) {
+            console.error('[CAPTION API] Firestore init error:', error);
+            return res.status(500).json({
+                success: false,
+                error: 'Firestore Initialization Failed',
+                details: error.message
+            });
+        }
+    }
+
     if (req.method !== 'GET') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
         const { id } = req.query;
+
+        console.log(`[CAPTION API] Generating caption for event: ${id}`);
 
         // Get event data
         const eventDoc = await db.collection('events').doc(id).get();
@@ -82,6 +111,8 @@ export default async function handler(req, res) {
             link: event.referralUrl
         });
 
+        console.log(`[CAPTION API] ✅ Caption generated for: ${event.title}`);
+
         return res.status(200).json({
             success: true,
             eventId: id,
@@ -89,10 +120,12 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[CAPTION API ERROR]', error);
+        console.error('[CAPTION API ERROR] Stack:', error.stack);
         return res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message,
+            details: 'Check Vercel logs for more information'
         });
     }
 }

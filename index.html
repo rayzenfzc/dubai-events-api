@@ -355,12 +355,16 @@
         .event-image-container {
             position: relative;
             width: 100%;
-            height: 220px;
+            padding-top: 56.25%;
+            /* 16:9 aspect ratio */
             overflow: hidden;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
 
         .event-image {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -503,17 +507,78 @@
 
         /* FOOTER */
         .footer {
-            background: var(--dark);
-            color: rgba(255, 255, 255, 0.8);
-            padding: 3rem 2rem;
-            text-align: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 4rem 2rem 2rem;
+            margin-top: 4rem;
         }
 
-        .footer p {
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3 {
+            color: white;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            line-height: 2;
+            display: block;
+            transition: all 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary);
+            padding-left: 0.5rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+            padding-left: 0;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .footer-bottom p {
             margin-bottom: 0.5rem;
         }
 
-        .footer a {
+        .footer-bottom a {
             color: var(--primary);
             text-decoration: none;
         }
@@ -616,9 +681,49 @@
 
     <!-- FOOTER -->
     <footer class="footer">
-        <p>© 2025 Dubai Events Online - Your Guide to Dubai's Best Entertainment</p>
-        <p>Affiliate Partner of <a href="https://platinumlist.net" target="_blank">PlatinumList</a></p>
-        <p>Affiliate Disclosure: We may earn commissions from qualifying purchases.</p>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Dubai Events Online</h3>
+                <p>Your ultimate guide to the best events, concerts, shows, and attractions in Dubai. Book tickets for
+                    unforgettable experiences!</p>
+                <div class="footer-social">
+                    <a href="https://facebook.com" target="_blank" title="Facebook">📘</a>
+                    <a href="https://instagram.com" target="_blank" title="Instagram">📷</a>
+                    <a href="https://twitter.com" target="_blank" title="Twitter">🐦</a>
+                    <a href="https://youtube.com" target="_blank" title="YouTube">📺</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#top">Top Events</a>
+                <a href="#concerts">Concerts</a>
+                <a href="#shows">Shows & Theater</a>
+                <a href="#attractions">Attractions</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <a href="#concerts">Music & Concerts</a>
+                <a href="#shows">Theater & Shows</a>
+                <a href="#attractions">Theme Parks</a>
+                <a href="#attractions">Water Parks</a>
+                <a href="#attractions">Desert Safaris</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>📧 info@dubaievents.online</p>
+                <p>📍 Dubai, UAE</p>
+                <p>🕐 24/7 Online Booking</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Dubai Events Online - All Rights Reserved</p>
+            <p>Official Affiliate Partner of <a href="https://platinumlist.net" target="_blank">PlatinumList</a></p>
+            <p>Affiliate Disclosure: We may earn commissions from qualifying purchases through our affiliate links.</p>
+        </div>
     </footer>
 
     <script>
@@ -738,28 +843,46 @@
 
                 console.log(`✅ Loaded ${allEvents.length} unique events`);
 
-                // Categorize events
+                // Categorize events (ensure no duplicates across categories)
+                const usedEventIds = new Set();
+
+                // Top events - featured first
                 state.top.all = allEvents.filter(e => e.featured).slice(0, 20);
                 if (state.top.all.length < 6) {
-                    state.top.all = allEvents.slice(0, 20); // Fallback to all events
+                    state.top.all = allEvents.slice(0, 20);
                 }
+                state.top.all.forEach(e => usedEventIds.add(e.id));
 
+                // Concerts - exclude already used events
                 state.concerts.all = allEvents.filter(e =>
+                    !usedEventIds.has(e.id) &&
                     e.category && (e.category.toLowerCase().includes('concert') || e.category.toLowerCase().includes('music'))
                 );
 
+                // Shows - exclude already used events
                 state.shows.all = allEvents.filter(e =>
+                    !usedEventIds.has(e.id) &&
                     e.category && (e.category.toLowerCase().includes('show') || e.category.toLowerCase().includes('theater'))
                 );
 
+                // Attractions - exclude already used events
                 state.attractions.all = allEvents.filter(e =>
+                    !usedEventIds.has(e.id) &&
                     e.category && e.category.toLowerCase().includes('attraction')
                 );
 
-                // If categories are empty, distribute events
-                if (state.concerts.all.length === 0) state.concerts.all = allEvents.slice(0, 12);
-                if (state.shows.all.length === 0) state.shows.all = allEvents.slice(12, 24);
-                if (state.attractions.all.length === 0) state.attractions.all = allEvents.slice(24, 36);
+                // If categories are empty, fill with unused events
+                const remainingEvents = allEvents.filter(e => !usedEventIds.has(e.id));
+                if (state.concerts.all.length === 0 && remainingEvents.length > 0) {
+                    state.concerts.all = remainingEvents.slice(0, 12);
+                    remainingEvents.slice(0, 12).forEach(e => usedEventIds.add(e.id));
+                }
+                if (state.shows.all.length === 0 && remainingEvents.length > 12) {
+                    state.shows.all = remainingEvents.slice(12, 24);
+                }
+                if (state.attractions.all.length === 0 && remainingEvents.length > 24) {
+                    state.attractions.all = remainingEvents.slice(24, 36);
+                }
 
                 // Render all sections
                 renderGrid('top', 6);

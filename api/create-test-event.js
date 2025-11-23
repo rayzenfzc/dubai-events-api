@@ -68,7 +68,7 @@ export default async function handler(req, res) {
             startDate: new Date('2025-12-15T19:00:00').toISOString(),
             minPrice: "150",
             currency: "AED",
-            image: "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg",
+            image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
             referralUrl: "https://platinumlist.net/event-tickets/jazz-festival-dubai",
             status: "on sale",
             featured: true,

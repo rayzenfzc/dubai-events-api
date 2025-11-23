@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Test Event - Dubai Events Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .alert-error {
+            background: #ef4444;
+            color: white;
+        }
+
+        .alert-info {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .quick-fill {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quick-fill-btn {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .quick-fill-btn:hover {
+            background: #e5e7eb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Add Test Event</h1>
+            <p>Dubai Events Admin Panel</p>
+        </div>
+
+        <div id="alertBox"></div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 20px; color: #333;">Create New Event</h2>
+
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="title">Event Title *</label>
+                    <input type="text" id="title" required>
+                    <div class="quick-fill">
+                        <button type="button" class="quick-fill-btn" onclick="quickFill('concert')">🎵 Concert</button>
+                        <button type="button" class="quick-fill-btn" onclick="quickFill('brunch')">🍽️ Brunch</button>
+                        <button type="button" class="quick-fill-btn" onclick="quickFill('festival')">🎪
+                            Festival</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description *</label>
+                    <textarea id="description" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="venue">Venue *</label>
+                    <input type="text" id="venue" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="startDate">Event Date & Time *</label>
+                    <input type="datetime-local" id="startDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="minPrice">Price (AED) *</label>
+                    <input type="number" id="minPrice" required min="0" value="150">
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Currency</label>
+                    <select id="currency">
+                        <option value="AED">AED</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Event Image URL *</label>
+                    <input type="url" id="image" required placeholder="https://example.com/image.jpg">
+                    <small style="display: block; margin-top: 5px; color: #6b7280;">
+                        Use a public image URL (e.g., from Unsplash, Firebase Storage, etc.)
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="referralUrl">Ticket/Affiliate Link *</label>
+                    <input type="url" id="referralUrl" required placeholder="https://platinumlist.net/...">
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Event Status</label>
+                    <select id="status">
+                        <option value="on sale">On Sale</option>
+                        <option value="sold out">Sold Out</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="featured">
+                    <label for="featured" style="margin-bottom: 0;">⭐ Featured Event</label>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="posted">
+                    <label for="posted" style="margin-bottom: 0;">Already Posted to Instagram</label>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    Create Event
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 15px;">📝 Instructions</h3>
+            <ol style="line-height: 1.8; color: #4b5563;">
+                <li>Fill in all required fields (*)</li>
+                <li>Leave "Already Posted" unchecked for new events</li>
+                <li>Use the quick-fill buttons for sample events</li>
+                <li>After creating an event, go back to Make.com and run your scenario</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCjwt3v_4nnuJPPtcR0f5Y4pGoBU1e0Rj0",
+            authDomain: "studio-5227087607-7e335.firebaseapp.com",
+            projectId: "studio-5227087607-7e335",
+            storageBucket: "studio-5227087607-7e335.firebasestorage.app",
+            messagingSenderId: "802927638334",
+            appId: "1:802927638334:web:4b95a92cb5db7d1c3da52f"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Quick fill templates
+        const templates = {
+            concert: {
+                title: "Dubai Jazz Festival 2025",
+                description: "Experience an unforgettable night of live jazz music featuring international and local artists. Join us for an evening of smooth melodies, great food, and amazing atmosphere under the Dubai skyline.",
+                venue: "Dubai Media City Amphitheatre",
+                image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800",
+                referralUrl: "https://platinumlist.net/event-tickets/jazz-festival-dubai"
+            },
+            brunch: {
+                title: "Friday Brunch at Five Palm Jumeirah",
+                description: "Indulge in an exquisite Friday brunch experience with unlimited international cuisine and beverages. Enjoy live entertainment, stunning views, and a luxurious atmosphere perfect for the whole family.",
+                venue: "Five Palm Jumeirah Hotel",
+                image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800",
+                referralUrl: "https://platinumlist.net/event-tickets/friday-brunch"
+            },
+            festival: {
+                title: "Dubai Food Festival 2025",
+                description: "Celebrate Dubai's vibrant culinary scene at the biggest food festival of the year! Sample dishes from over 100 restaurants, watch celebrity chef demonstrations, and enjoy live cooking competitions.",
+                venue: "Dubai Festival City",
+                image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800",
+                referralUrl: "https://platinumlist.net/event-tickets/food-festival"
+            }
+        };
+
+        function quickFill(type) {
+            const template = templates[type];
+            document.getElementById('title').value = template.title;
+            document.getElementById('description').value = template.description;
+            document.getElementById('venue').value = template.venue;
+            document.getElementById('image').value = template.image;
+            document.getElementById('referralUrl').value = template.referralUrl;
+
+            // Set date to next Friday at 7 PM
+            const nextFriday = new Date();
+            nextFriday.setDate(nextFriday.getDate() + (5 - nextFriday.getDay() + 7) % 7);
+            nextFriday.setHours(19, 0, 0, 0);
+            document.getElementById('startDate').value = nextFriday.toISOString().slice(0, 16);
+        }
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertBox.innerHTML = '';
+            }, 5000);
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Event...';
+
+            try {
+                const eventData = {
+                    title: document.getElementById('title').value,
+                    description: document.getElementById('description').value,
+                    venue: document.getElementById('venue').value,
+                    startDate: new Date(document.getElementById('startDate').value).toISOString(),
+                    minPrice: document.getElementById('minPrice').value,
+                    currency: document.getElementById('currency').value,
+                    image: document.getElementById('image').value,
+                    referralUrl: document.getElementById('referralUrl').value,
+                    status: document.getElementById('status').value,
+                    featured: document.getElementById('featured').checked,
+                    posted: document.getElementById('posted').checked,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    source: 'admin_panel'
+                };
+
+                const docRef = await db.collection('events').add(eventData);
+
+                showAlert(`✅ Event created successfully! ID: ${docRef.id}`, 'success');
+
+                // Reset form
+                document.getElementById('eventForm').reset();
+
+                // Show next steps
+                setTimeout(() => {
+                    showAlert('📍 Next: Go to Make.com and run your scenario to post this event!', 'info');
+                }, 3000);
+
+            } catch (error) {
+                console.error('Error creating event:', error);
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Event';
+            }
+        });
+
+        // Set default date to next Friday
+        window.addEventListener('load', () => {
+            const nextFriday = new Date();
+            nextFriday.setDate(nextFriday.getDate() + (5 - nextFriday.getDay() + 7) % 7);
+            nextFriday.setHours(19, 0, 0, 0);
+            document.getElementById('startDate').value = nextFriday.toISOString().slice(0, 16);
+        });
+    </script>
+</body>
+
+</html>

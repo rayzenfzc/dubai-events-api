@@ -32,6 +32,10 @@
             "dest": "/api/create-test-event.js"
         },
         {
+            "src": "/api/add-attractions",
+            "dest": "/api/add-attractions.js"
+        },
+        {
             "src": "/api/(.*)",
             "dest": "/api/$1"
         }

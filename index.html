@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>Dubai Events 2025 | Best Things to Do, Concerts & Entertainment</title>
+    <meta name="description"
+        content="Discover Dubai's hottest events, concerts, shows & attractions. Book tickets for the best entertainment experiences in Dubai. Exclusive deals & instant booking!">
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E85A2A;
+            --secondary: #004E89;
+            --accent: #F7B801;
+            --dark: #1A1A2E;
+            --light: #F8F9FA;
+            --gray: #6C757D;
+            --success: #28A745;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .header-nav a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .header-nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* HERO CAROUSEL */
+        .hero-carousel {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+            padding: 3rem 2rem 2rem;
+            color: white;
+        }
+
+        .carousel-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .carousel-meta {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .carousel-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .carousel-btn {
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .carousel-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: white;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+
+        .carousel-nav:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .carousel-nav.prev {
+            left: 1rem;
+        }
+
+        .carousel-nav.next {
+            right: 1rem;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .carousel-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .carousel-indicator.active {
+            background: white;
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        /* SEARCH BAR */
+        .search-container {
+            max-width: 600px;
+            margin: 2rem auto 0;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.25rem 3.5rem 1.25rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--gray);
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* SECTION */
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.75rem, 3vw, 2.5rem);
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .view-all-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .view-all-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* EVENT GRID */
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .event-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        /* EVENT CARD */
+        .event-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .event-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .event-image-container {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .event-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.3s;
+        }
+
+        .event-card:hover .event-image {
+            transform: scale(1.05);
+        }
+
+        .event-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .event-badge.featured {
+            background: var(--accent);
+            color: var(--dark);
+        }
+
+        .event-badge.new {
+            background: var(--success);
+        }
+
+        .event-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-category {
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .event-price {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-tag {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .price-currency {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .book-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .book-btn:hover {
+            background: #003d6b;
+            transform: scale(1.05);
+        }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            font-size: 1.25rem;
+            color: var(--gray);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* FOOTER */
+        .footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header-nav {
+                display: none;
+            }
+
+            .hero {
+                padding: 3rem 1.5rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Dubai Events</div>
+            <nav class="header-nav">
+                <a href="#top">Top Events</a>
+                <a href="#concerts">Concerts</a>
+                <a href="#shows">Shows</a>
+                <a href="#attractions">Attractions</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO CAROUSEL -->
+    <section class="hero-carousel">
+        <div class="carousel-container">
+            <div class="carousel-track" id="carouselTrack">
+                <!-- Slides will be inserted here by JavaScript -->
+            </div>
+            <button class="carousel-nav prev" onclick="prevSlide()">❮</button>
+            <button class="carousel-nav next" onclick="nextSlide()">❯</button>
+            <div class="carousel-indicators" id="carouselIndicators"></div>
+        </div>
+    </section>
+
+    <!-- SEARCH BAR -->
+    <div class="container" style="padding-top: 2rem; padding-bottom: 1rem;">
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search events, concerts, shows...">
+            <span class="search-icon">🔍</span>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <!-- TOP EVENTS -->
+        <section class="section" id="top">
+            <div class="section-header">
+                <h2 class="section-title">🔥 Top Events</h2>
+                <button class="view-all-btn" onclick="toggleSection('top')">View All</button>
+            </div>
+            <div class="event-grid" id="grid-top"></div>
+        </section>
+
+        <!-- CONCERTS -->
+        <section class="section" id="concerts">
+            <div class="section-header">
+                <h2 class="section-title">🎵 Concerts & Music</h2>
+                <button class="view-all-btn" onclick="toggleSection('concerts')">View All</button>
+            </div>
+            <div class="event-grid" id="grid-concerts"></div>
+        </section>
+
+        <!-- SHOWS -->
+        <section class="section" id="shows">
+            <div class="section-header">
+                <h2 class="section-title">🎭 Shows & Theater</h2>
+                <button class="view-all-btn" onclick="toggleSection('shows')">View All</button>
+            </div>
+            <div class="event-grid" id="grid-shows"></div>
+        </section>
+
+        <!-- ATTRACTIONS -->
+        <section class="section" id="attractions">
+            <div class="section-header">
+                <h2 class="section-title">🎢 Attractions & Experiences</h2>
+                <button class="view-all-btn" onclick="toggleSection('attractions')">View All</button>
+            </div>
+            <div class="event-grid" id="grid-attractions"></div>
+        </section>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading amazing Dubai events...</p>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>© 2025 Dubai Events Online - Your Guide to Dubai's Best Entertainment</p>
+        <p>Affiliate Partner of <a href="https://platinumlist.net" target="_blank">PlatinumList</a></p>
+        <p>Affiliate Disclosure: We may earn commissions from qualifying purchases.</p>
+    </footer>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBf-2YYNXDZn0-APWMqIqzwi45Ox_M4yIk",
+            authDomain: "studio-1436622267-3c444.firebaseapp.com",
+            projectId: "studio-1436622267-3c444",
+            storageBucket: "studio-1436622267-3c444.firebasestorage.app",
+            messagingSenderId: "350773236607",
+            appId: "1:350773236607:web:91cb954c8524b1ab07804a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // State
+        const state = {
+            top: { all: [], showing: 6 },
+            concerts: { all: [], showing: 6 },
+            shows: { all: [], showing: 6 },
+            attractions: { all: [], showing: 6 }
+        };
+
+        // Create Event Card
+        function createEventCard(event) {
+            const badge = event.featured ? 'featured' : (event.category === 'concert' ? 'new' : '');
+            const badgeText = event.featured ? '⭐ Featured' : (event.category === 'concert' ? '🆕 New' : event.category || 'Event');
+
+            return `
+        <a href="${event.link || event.referralUrl}" target="_blank" rel="noopener" class="event-card">
+          <div class="event-image-container">
+            <img src="${event.image}" alt="${event.title}" class="event-image" loading="lazy" 
+                 onerror="this.src='https://via.placeholder.com/600x400/667eea/ffffff?text=Dubai+Event'">
+            ${badge ? `<div class="event-badge ${badge}">${badgeText}</div>` : ''}
+          </div>
+          <div class="event-content">
+            <div class="event-category">${event.category || 'Event'}</div>
+            <h3 class="event-title">${event.title}</h3>
+            <div class="event-meta">
+              ${event.venue ? `<div class="event-meta-item">📍 ${event.venue}</div>` : ''}
+              ${event.date ? `<div class="event-meta-item">📅 ${new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>` : ''}
+            </div>
+            <div class="event-price">
+              <div>
+                <div class="price-tag">${event.price || event.minPrice ? `${event.currency || 'AED'} ${event.price || event.minPrice}` : 'View Price'}</div>
+                ${event.price || event.minPrice ? `<div class="price-currency">Starting from</div>` : ''}
+              </div>
+              <button class="book-btn">Book Now →</button>
+            </div>
+          </div>
+        </a>
+      `;
+        }
+
+        // Render Grid
+        function renderGrid(category, limit) {
+            const grid = document.getElementById(`grid-${category}`);
+            const events = state[category].all.slice(0, limit);
+
+            if (events.length === 0) {
+                grid.innerHTML = '<p style="text-align:center;color:#6c757d;padding:2rem;">No events found in this category.</p>';
+                return;
+            }
+
+            grid.innerHTML = events.map(createEventCard).join('');
+        }
+
+        // Toggle Section
+        function toggleSection(category) {
+            const current = state[category].showing;
+            const total = state[category].all.length;
+
+            if (current >= total) {
+                state[category].showing = 6;
+            } else {
+                state[category].showing = total;
+            }
+
+            renderGrid(category, state[category].showing);
+        }
+
+        // Load Events
+        async function loadEvents() {
+            try {
+                console.log('🔥 Loading events from Firestore...');
+
+                const snapshot = await db.collection('events')
+                    .where('status', '==', 'on sale')
+                    .limit(100)
+                    .get();
+
+                const allEvents = [];
+                const seenTitles = new Set(); // Prevent duplicates
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const event = {
+                        id: doc.id,
+                        title: data.title,
+                        image: data.image,
+                        venue: data.venue,
+                        date: data.startDate || data.date,
+                        price: data.minPrice || data.price,
+                        currency: data.currency || 'AED',
+                        link: data.referralUrl || data.link,
+                        category: data.category || 'attraction',
+                        featured: data.featured || false
+                    };
+
+                    // Only add if title is unique
+                    if (!seenTitles.has(event.title)) {
+                        seenTitles.add(event.title);
+                        allEvents.push(event);
+                    }
+                });
+
+                console.log(`✅ Loaded ${allEvents.length} unique events`);
+
+                // Categorize events
+                state.top.all = allEvents.filter(e => e.featured).slice(0, 20);
+                if (state.top.all.length < 6) {
+                    state.top.all = allEvents.slice(0, 20); // Fallback to all events
+                }
+
+                state.concerts.all = allEvents.filter(e =>
+                    e.category && (e.category.toLowerCase().includes('concert') || e.category.toLowerCase().includes('music'))
+                );
+
+                state.shows.all = allEvents.filter(e =>
+                    e.category && (e.category.toLowerCase().includes('show') || e.category.toLowerCase().includes('theater'))
+                );
+
+                state.attractions.all = allEvents.filter(e =>
+                    e.category && e.category.toLowerCase().includes('attraction')
+                );
+
+                // If categories are empty, distribute events
+                if (state.concerts.all.length === 0) state.concerts.all = allEvents.slice(0, 12);
+                if (state.shows.all.length === 0) state.shows.all = allEvents.slice(12, 24);
+                if (state.attractions.all.length === 0) state.attractions.all = allEvents.slice(24, 36);
+
+                // Render all sections
+                renderGrid('top', 6);
+                renderGrid('concerts', 6);
+                renderGrid('shows', 6);
+                renderGrid('attractions', 6);
+
+                // Render carousel with all events
+                renderCarousel(allEvents);
+
+                document.getElementById('loading').style.display = 'none';
+
+            } catch (error) {
+                console.error('❌ Error loading events:', error);
+                document.getElementById('loading').innerHTML = `
+          <p style="color:#dc3545;">⚠️ Error loading events. Please refresh the page.</p>
+        `;
+            }
+        }
+
+        // Carousel Variables
+        let currentSlide = 0;
+        let carouselEvents = [];
+        let carouselInterval;
+
+        // Render Carousel
+        function renderCarousel(events) {
+            carouselEvents = events.slice(0, 20); // Show first 20 events in carousel
+            const track = document.getElementById('carouselTrack');
+            const indicators = document.getElementById('carouselIndicators');
+
+            if (carouselEvents.length === 0) return;
+
+            // Create slides
+            track.innerHTML = carouselEvents.map(event => `
+                <div class="carousel-slide">
+                    <img src="${event.image}" alt="${event.title}" 
+                         onerror="this.src='https://via.placeholder.com/1200x500/667eea/ffffff?text=Dubai+Event'">
+                    <div class="carousel-overlay">
+                        <h2 class="carousel-title">${event.title}</h2>
+                        <div class="carousel-meta">
+                            ${event.venue ? `📍 ${event.venue}` : ''}
+                            ${event.date ? ` • 📅 ${new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}
+                        </div>
+                        <div class="carousel-price">
+                            ${event.price ? `From ${event.currency} ${event.price}` : 'View Pricing'}
+                        </div>
+                        <a href="${event.link}" target="_blank" class="carousel-btn">Book Now →</a>
+                    </div>
+                </div>
+            `).join('');
+
+            // Create indicators
+            indicators.innerHTML = carouselEvents.map((_, i) => `
+                <button class="carousel-indicator ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></button>
+            `).join('');
+
+            // Start auto-scroll
+            startCarousel();
+        }
+
+        // Carousel Navigation
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % carouselEvents.length;
+            updateCarousel();
+            resetCarouselTimer();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + carouselEvents.length) % carouselEvents.length;
+            updateCarousel();
+            resetCarouselTimer();
+        }
+
+        function updateCarousel() {
+            const track = document.getElementById('carouselTrack');
+            const indicators = document.querySelectorAll('.carousel-indicator');
+
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            indicators.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function startCarousel() {
+            carouselInterval = setInterval(() => {
+                nextSlide();
+            }, 4000); // Change slide every 4 seconds
+        }
+
+        function resetCarouselTimer() {
+            clearInterval(carouselInterval);
+            startCarousel();
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+
+            if (!query) {
+                renderGrid('top', state.top.showing);
+                renderGrid('concerts', state.concerts.showing);
+                renderGrid('shows', state.shows.showing);
+                renderGrid('attractions', state.attractions.showing);
+                return;
+            }
+
+            ['top', 'concerts', 'shows', 'attractions'].forEach(category => {
+                const filtered = state[category].all.filter(event =>
+                    event.title.toLowerCase().includes(query) ||
+                    (event.venue && event.venue.toLowerCase().includes(query)) ||
+                    (event.category && event.category.toLowerCase().includes(query))
+                );
+
+                const grid = document.getElementById(`grid-${category}`);
+                if (filtered.length === 0) {
+                    grid.innerHTML = '<p style="text-align:center;color:#6c757d;padding:2rem;">No matching events found.</p>';
+                } else {
+                    grid.innerHTML = filtered.map(createEventCard).join('');
+                }
+            });
+        });
+
+        // Initialize
+        loadEvents();
+    </script>
+</body>
+
+</html>

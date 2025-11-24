@@ -36,6 +36,10 @@
             "dest": "/api/add-attractions.js"
         },
         {
+            "src": "/api/events/weekly",
+            "dest": "/api/events/weekly.js"
+        },
+        {
             "src": "/",
             "dest": "/index.html"
         },

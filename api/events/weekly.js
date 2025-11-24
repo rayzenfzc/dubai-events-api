@@ -1,5 +1,5 @@
 // API endpoint to fetch events happening this week
-const admin = require('firebase-admin');
+import admin from 'firebase-admin';
 
 // Initialize Firebase Admin if not already initialized
 if (!admin.apps.length) {
@@ -18,7 +18,7 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
